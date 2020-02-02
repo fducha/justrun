@@ -1,0 +1,48 @@
+import 'package:flutter/material.dart';
+
+import 'languages/lang.dart';
+
+class AppLocalization {
+  final Locale locale;
+
+  Map<StringKey, String> _localizedStrings;
+
+  AppLocalization(this.locale);
+
+  static AppLocalization of(BuildContext context) {
+    return Localizations.of<AppLocalization>(context, AppLocalization);
+  }
+
+  static const LocalizationsDelegate<AppLocalization> delegate = _AppLocalizationDelegate();
+
+  Future<bool> load() async {
+    _localizedStrings = getLocalizedStrings(locale.languageCode);
+    return true;
+  }
+
+  String _translate(StringKey key) {
+    return _localizedStrings[key];
+  }
+
+  // getters of translated texts 
+  String get appTitle => _translate(StringKey.AppTitle);
+}
+
+class _AppLocalizationDelegate extends LocalizationsDelegate<AppLocalization> {
+  const _AppLocalizationDelegate();
+
+  @override
+  bool isSupported(Locale locale) {
+    return ['en', 'ru'].contains(locale.languageCode);
+  }
+
+  @override
+  Future<AppLocalization> load(Locale locale) async {
+    AppLocalization localization = AppLocalization(locale);
+    localization.load();
+    return localization;
+  }
+
+  @override
+  bool shouldReload(LocalizationsDelegate<AppLocalization> old) => false;
+}

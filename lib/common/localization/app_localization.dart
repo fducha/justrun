@@ -26,6 +26,10 @@ class AppLocalization {
 
   // getters of translated texts 
   String get appTitle => _translate(StringKey.AppTitle);
+  String get walkingTitle => _translate(StringKey.WalkingTitle);
+  String get slowRunTitle => _translate(StringKey.SlowRunTitle);
+  String get normalRunTitle => _translate(StringKey.NormalRunTitle);
+  String get acceleratedRunTitle => _translate(StringKey.AcceleratedRunTitle);
 }
 
 class _AppLocalizationDelegate extends LocalizationsDelegate<AppLocalization> {

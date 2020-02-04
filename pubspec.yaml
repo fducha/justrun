@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  equatable: ^1.0.3
+  states_rebuilder: ^1.12.1
 
   flutter_localizations:
     sdk: flutter

@@ -3,6 +3,10 @@ import 'package:justrun/common/localization/languages/ru_dict.dart';
 
 enum StringKey {
   AppTitle,
+  WalkingTitle,
+  SlowRunTitle,
+  NormalRunTitle,
+  AcceleratedRunTitle,
 }
 
 Map<StringKey, String> getLocalizedStrings(String languageCode) {

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:justrun/common/localization/app_localization.dart';
-import 'package:justrun/common/utils/utils.dart';
-import 'package:justrun/features/justrun/models/entities/exercise.dart';
-import 'package:justrun/features/justrun/models/entities/task.dart';
+
+import '../../../../core/localization/app_localization.dart';
+import '../../../../core/utils/utils.dart';
+import '../../domain/entities/exercise.dart';
+import '../../domain/entities/task.dart';
 
 class TrainingPage extends StatelessWidget {
   TrainingPage({Key key}) : super(key: key);

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:justrun/features/justrun/ui/pages/training_page.dart';
 
-import 'common/localization/app_localization.dart';
+import 'core/localization/app_localization.dart';
+import 'features/justrun/ui/pages/training_page.dart';
 
 void main() => runApp(MyApp());
 

@@ -1,5 +1,5 @@
-import 'package:justrun/features/justrun/models/entities/task.dart';
-import 'package:justrun/features/justrun/models/entities/training.dart';
+import 'package:justrun/features/justrun/domain/entities/task.dart';
+import 'package:justrun/features/justrun/domain/entities/training.dart';
 
 enum ProcessState {
   Ready,

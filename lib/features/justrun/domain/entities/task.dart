@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:justrun/features/justrun/models/entities/exercise.dart';
+import 'package:justrun/features/justrun/domain/entities/exercise.dart';
 import 'package:meta/meta.dart';
 
 // enum Exercise {

@@ -1,5 +1,5 @@
-import 'package:justrun/common/localization/languages/en_dict.dart';
-import 'package:justrun/common/localization/languages/ru_dict.dart';
+import 'package:justrun/core/localization/languages/en_dict.dart';
+import 'package:justrun/core/localization/languages/ru_dict.dart';
 
 enum StringKey {
   AppTitle,

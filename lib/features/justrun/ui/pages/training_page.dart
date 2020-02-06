@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../../../../core/localization/app_localization.dart';
 import '../../../../core/utils/utils.dart';
-import '../../domain/entities/exercise.dart';
 import '../../domain/entities/task.dart';
+import '../../domain/pure_models/training_model.dart';
 
 class TrainingPage extends StatelessWidget {
   TrainingPage({Key key}) : super(key: key);
@@ -13,65 +14,70 @@ class TrainingPage extends StatelessWidget {
     double itemHeight = MediaQuery.of(context).size.height / 10;
     double itemWidth = MediaQuery.of(context).size.width - 16.0;
 
-    final running = Exercise(
-      title: AppLocalization.of(context).normalRunTitle,
-      color: Colors.green[500],
-    );
-    final walking = Exercise(
-      title: AppLocalization.of(context).walkingTitle,
-      color: Colors.pink[300],
-    );
-    final List<Task> _tasks = [
-      Task(exercise: running, duration: 60),
-      Task(exercise: walking, duration: 60),
-      Task(exercise: running, duration: 60),
-      Task(exercise: walking, duration: 60),
-      Task(exercise: running, duration: 60),
-      Task(exercise: walking, duration: 60),
-    ];
+    final rxTrainingModel = Injector.getAsReactive<TrainingModel>();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalization.of(context).appTitle),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        padding: EdgeInsets.all(8.0),
-        itemCount: _tasks.length,
-        itemBuilder: (context, index) {
-          return index == 0
-              ? _buildCurrentItem(
-                  _tasks[index],
-                  index,
-                  itemHeight * 2,
-                  itemWidth,
-                  Theme.of(context).textTheme.body1.copyWith(
-                        fontSize: 48,
-                        color: Colors.white,
-                      ),
-                )
-              : _buildItem(
-                  _tasks[index],
-                  index,
-                  itemHeight,
-                  Theme.of(context).textTheme.body1.copyWith(
-                        fontSize: 26,
-                        color: Colors.white,
-                      ),
-                );
-        },
+      body: StateBuilder<TrainingModel>(
+        models: [rxTrainingModel],
+        builder: (context, rxModel) => rxModel.whenConnectionState(
+          onIdle: () => Container(),
+          onWaiting: () => Center(child: CircularProgressIndicator()),
+          onError: (error) => Center(child: Text(error.toString())),
+          onData: (TrainingModel pureModel) => ListView.builder(
+            padding: EdgeInsets.all(8.0),
+            itemCount: pureModel.training.tasks.length,
+            itemBuilder: (context, index) {
+              final _tasks = pureModel.training.tasks;
+              return index == 0
+                  ? _buildCurrentItem(
+                      _tasks[index],
+                      index,
+                      itemHeight * 2,
+                      itemWidth,
+                      Theme.of(context).textTheme.body1.copyWith(
+                            fontSize: 48,
+                            color: Colors.white,
+                          ),
+                    )
+                  : _buildItem(
+                      _tasks[index],
+                      index,
+                      itemHeight,
+                      Theme.of(context).textTheme.body1.copyWith(
+                            fontSize: 26,
+                            color: Colors.white,
+                          ),
+                    );
+            },
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        icon: Icon(
-          Icons.play_arrow,
-          size: 36.0,
-        ),
+        backgroundColor: Colors.red,
         onPressed: () {},
-        label: Text(
-          'Start',
-          style: Theme.of(context)
-              .textTheme
-              .body1
-              .copyWith(fontSize: 28.0, color: Colors.white),
+        label: Container(
+          width: (itemWidth + 16.0) / 3,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.play_arrow,
+                size: 36.0,
+              ),
+              SizedBox(width: 8.0),
+              Text(
+                'Start',
+                style: Theme.of(context)
+                    .textTheme
+                    .body1
+                    .copyWith(fontSize: 28.0, color: Colors.white),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

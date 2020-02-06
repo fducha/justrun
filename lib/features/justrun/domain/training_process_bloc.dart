@@ -1,7 +1,7 @@
 import 'package:justrun/features/justrun/domain/entities/task.dart';
 import 'package:justrun/features/justrun/domain/entities/training.dart';
 
-enum ProcessState {
+enum TrainingProcessState {
   Ready,
   InProcess,
   Paused,
@@ -10,31 +10,31 @@ enum ProcessState {
 
 class TrainingProcessBloc {
   Training _training;
-  ProcessState _state;
+  TrainingProcessState _state;
 
   void setTraining(Training training) {
     _training = Training(List.from(training.tasks));
-    _state = ProcessState.Ready;
+    _state = TrainingProcessState.Ready;
   }
 
   Training get training => _training;
-  ProcessState get processState => _state;
+  TrainingProcessState get processState => _state;
   Task get currentTask => _training.tasks[0];
 
   void start() {
-    if (processState == ProcessState.Ready || processState == ProcessState.Done) {
+    if (processState == TrainingProcessState.Ready || processState == TrainingProcessState.Done) {
       //
     }
   }
 
   void pause() {
-    if (processState == ProcessState.InProcess) {
+    if (processState == TrainingProcessState.InProcess) {
       //
     }
   }
 
   void resume() {
-    if (processState == ProcessState.Paused) {
+    if (processState == TrainingProcessState.Paused) {
       //
     }
   }

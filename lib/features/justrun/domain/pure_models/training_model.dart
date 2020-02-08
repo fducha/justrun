@@ -14,7 +14,7 @@ class TrainingModel {
   final Repository repository;
   
   Training _training;
-  TrainingProcessState _processState;
+  TrainingProcessState _processState = TrainingProcessState.Ready;
 
   TrainingModel({@required this.repository});
 

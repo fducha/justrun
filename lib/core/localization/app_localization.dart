@@ -30,6 +30,13 @@ class AppLocalization {
   String get slowRunTitle => _translate(StringKey.SlowRunTitle);
   String get normalRunTitle => _translate(StringKey.NormalRunTitle);
   String get acceleratedRunTitle => _translate(StringKey.AcceleratedRunTitle);
+
+  String get fabTrainingPageStartText => _translate(StringKey.TrainingPageFABStartText);
+  String get fabTrainingPagePauseText => _translate(StringKey.TrainingPageFABPauseText);
+  String get fabTrainingPageResumeText => _translate(StringKey.TrainingPageFABResumeText);
+  String get fabTrainingPageStopText => _translate(StringKey.TrainingPageFABStopText);
+  String get fabTrainingPageDoneText => _translate(StringKey.TrainingPageFABDoneText);
+  String get fabTrainingPageRepeatText => _translate(StringKey.TrainingPageFABRepeatText);
 }
 
 class _AppLocalizationDelegate extends LocalizationsDelegate<AppLocalization> {

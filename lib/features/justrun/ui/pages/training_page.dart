@@ -56,27 +56,51 @@ class TrainingPage extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.red,
-        onPressed: () {},
-        label: Container(
-          width: (itemWidth + 16.0) / 3,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(
-                Icons.play_arrow,
-                size: 36.0,
-              ),
-              SizedBox(width: 8.0),
-              Text(
-                'Start',
-                style: Theme.of(context)
-                    .textTheme
-                    .body1
-                    .copyWith(fontSize: 28.0, color: Colors.white),
-              ),
-            ],
+      floatingActionButton: StateBuilder<TrainingModel>(
+        models: [rxTrainingModel],
+        tag: ['fabTrainingPage'],
+        builder: (context, rxModel) => rxModel.whenConnectionState(
+          onIdle: () => Container(),
+          onWaiting: () => Container(),
+          onError: (error) => Center(child: Text(error.toString())),
+          onData: (pureModel) => FloatingActionButton.extended(
+            backgroundColor: Colors.red,
+            onPressed: () {
+              switch (pureModel.processState) {
+                case TrainingProcessState.Ready:
+                  rxModel.setState(
+                    (s) => s.processState = TrainingProcessState.InProcess,
+                    filterTags: ['fabTrainingPage'],
+                  );
+                  break;
+                case TrainingProcessState.InProcess:
+                  rxModel.setState(
+                    (s) => s.processState = TrainingProcessState.Paused,
+                    filterTags: ['fabTrainingPage'],
+                  );
+                  break;
+                case TrainingProcessState.Paused:
+                  rxModel.setState(
+                    (s) => s.processState = TrainingProcessState.InProcess,
+                    filterTags: ['fabTrainingPage'],
+                  );
+                  break;
+                case TrainingProcessState.Done:
+                  rxModel.setState(
+                    (s) => s.processState = TrainingProcessState.Ready,
+                    filterTags: ['fabTrainingPage'],
+                  );
+                  break;
+              }
+            },
+            icon: _getFABIcon(context, pureModel.processState),
+            label: Text(
+              _getFABText(context, pureModel.processState),
+              style: Theme.of(context)
+                  .textTheme
+                  .body1
+                  .copyWith(fontSize: 28.0, color: Colors.white),
+            ),
           ),
         ),
       ),
@@ -153,5 +177,35 @@ class TrainingPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getFABText(BuildContext context, TrainingProcessState state) {
+    switch (state) {
+      case TrainingProcessState.Ready:
+        return AppLocalization.of(context).fabTrainingPageStartText;
+      case TrainingProcessState.InProcess:
+        return AppLocalization.of(context).fabTrainingPagePauseText;
+      case TrainingProcessState.Paused:
+        return AppLocalization.of(context).fabTrainingPageResumeText;
+      case TrainingProcessState.Done:
+        return AppLocalization.of(context).fabTrainingPageRepeatText;
+      default:
+        return AppLocalization.of(context).fabTrainingPageStopText;
+    }
+  }
+
+  Icon _getFABIcon(BuildContext context, TrainingProcessState state) {
+    switch (state) {
+      case TrainingProcessState.Ready:
+        return Icon(Icons.play_arrow, size: 36.0);
+      case TrainingProcessState.InProcess:
+        return Icon(Icons.pause, size: 36.0);
+      case TrainingProcessState.Paused:
+        return Icon(Icons.play_arrow, size: 36.0);
+      case TrainingProcessState.Done:
+        return Icon(Icons.replay, size: 36.0);
+      default:
+        return Icon(Icons.stop, size: 36.0);
+    }
   }
 }

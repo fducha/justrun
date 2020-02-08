@@ -7,6 +7,13 @@ enum StringKey {
   SlowRunTitle,
   NormalRunTitle,
   AcceleratedRunTitle,
+
+  TrainingPageFABStartText,
+  TrainingPageFABPauseText,
+  TrainingPageFABResumeText,
+  TrainingPageFABStopText,
+  TrainingPageFABDoneText,
+  TrainingPageFABRepeatText,
 }
 
 Map<StringKey, String> getLocalizedStrings(String languageCode) {

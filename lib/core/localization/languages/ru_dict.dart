@@ -6,4 +6,11 @@ final ru_dict = <StringKey, String>{
   StringKey.SlowRunTitle: 'Медленный бег',
   StringKey.NormalRunTitle: 'Обычный бег',
   StringKey.AcceleratedRunTitle: 'Ускоренный бег',
+
+  StringKey.TrainingPageFABStartText: 'НАЧАТЬ',
+  StringKey.TrainingPageFABPauseText: 'ПАУЗА',
+  StringKey.TrainingPageFABResumeText: 'ПРОДОЛЖИТЬ',
+  StringKey.TrainingPageFABStopText: 'ВЫЙТИ',
+  StringKey.TrainingPageFABDoneText: 'ЗАКОНЧИТЬ',
+  StringKey.TrainingPageFABRepeatText: 'ПОВТОРИТЬ',
 };

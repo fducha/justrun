@@ -1,11 +1,20 @@
-import 'package:justrun/features/justrun/domain/entities/training.dart';
 import 'package:meta/meta.dart';
 
+import '../entities/training.dart';
 import '../repositories/repository.dart';
+
+enum TrainingProcessState {
+  Ready,
+  InProcess,
+  Paused,
+  Done,
+}
 
 class TrainingModel {
   final Repository repository;
+  
   Training _training;
+  TrainingProcessState _processState;
 
   TrainingModel({@required this.repository});
 
@@ -14,4 +23,9 @@ class TrainingModel {
   }
 
   Training get training => _training;
+  
+  TrainingProcessState get processState => _processState;
+  set processState(TrainingProcessState state) {
+    _processState = state;
+  }
 }

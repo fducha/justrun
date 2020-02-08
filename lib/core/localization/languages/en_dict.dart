@@ -6,4 +6,11 @@ final en_dict = <StringKey, String>{
   StringKey.SlowRunTitle: 'Slow run',
   StringKey.NormalRunTitle: 'Normal run',
   StringKey.AcceleratedRunTitle: 'Accelerated run',
+
+  StringKey.TrainingPageFABStartText: 'START',
+  StringKey.TrainingPageFABPauseText: 'PAUSE',
+  StringKey.TrainingPageFABResumeText: 'RESUME',
+  StringKey.TrainingPageFABStopText: 'STOP',
+  StringKey.TrainingPageFABDoneText: 'DONE',
+  StringKey.TrainingPageFABRepeatText: 'REPEAT',
 };

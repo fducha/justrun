@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:justrun/features/justrun/ui/triggers/training_model_trigger.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../../../../core/localization/app_localization.dart';
@@ -7,6 +8,8 @@ import '../../domain/entities/task.dart';
 import '../../domain/pure_models/training_model.dart';
 
 class TrainingPage extends StatelessWidget {
+  final TrainingModelTrigger _trigger = TrainingModelTrigger();
+
   TrainingPage({Key key}) : super(key: key);
 
   @override
@@ -14,27 +17,24 @@ class TrainingPage extends StatelessWidget {
     double itemHeight = MediaQuery.of(context).size.height / 10;
     double itemWidth = MediaQuery.of(context).size.width - 16.0;
 
-    final rxTrainingModel = Injector.getAsReactive<TrainingModel>();
-
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalization.of(context).appTitle),
         centerTitle: true,
       ),
       body: StateBuilder<TrainingModel>(
-        models: [rxTrainingModel],
+        models: [_trigger.rxModel],
         builder: (context, rxModel) => rxModel.whenConnectionState(
           onIdle: () => Container(),
           onWaiting: () => Center(child: CircularProgressIndicator()),
           onError: (error) => Center(child: Text(error.toString())),
           onData: (TrainingModel pureModel) => ListView.builder(
             padding: EdgeInsets.all(8.0),
-            itemCount: pureModel.training.tasks.length,
+            itemCount: _trigger.taskCount,
             itemBuilder: (context, index) {
-              final _tasks = pureModel.training.tasks;
               return index == 0
                   ? _buildCurrentItem(
-                      _tasks[index],
+                      _trigger.currentTask,
                       index,
                       itemHeight * 2,
                       itemWidth,
@@ -44,7 +44,7 @@ class TrainingPage extends StatelessWidget {
                           ),
                     )
                   : _buildItem(
-                      _tasks[index],
+                      _trigger.task(index),
                       index,
                       itemHeight,
                       Theme.of(context).textTheme.body1.copyWith(
@@ -57,7 +57,7 @@ class TrainingPage extends StatelessWidget {
         ),
       ),
       floatingActionButton: StateBuilder<TrainingModel>(
-        models: [rxTrainingModel],
+        models: [_trigger.rxModel],
         tag: ['fabTrainingPage'],
         builder: (context, rxModel) => rxModel.whenConnectionState(
           onIdle: () => Container(),
@@ -66,31 +66,21 @@ class TrainingPage extends StatelessWidget {
           onData: (pureModel) => FloatingActionButton.extended(
             backgroundColor: Colors.red,
             onPressed: () {
-              // rxModel.setState((s) => s.nextTask());
               switch (pureModel.processState) {
                 case TrainingProcessState.Ready:
-                  rxModel.setState(
-                    (s) => s.processState = TrainingProcessState.InProcess,
-                    filterTags: ['fabTrainingPage'],
-                  );
+                  _trigger.start();
+                  // rxModel.setState((s) => s.nextTask());
                   break;
                 case TrainingProcessState.InProcess:
-                  rxModel.setState(
-                    (s) => s.processState = TrainingProcessState.Paused,
-                    filterTags: ['fabTrainingPage'],
-                  );
+                  _trigger.pause();
+                  // rxModel.setState((s) => s.nextTask());
                   break;
                 case TrainingProcessState.Paused:
-                  rxModel.setState(
-                    (s) => s.processState = TrainingProcessState.InProcess,
-                    filterTags: ['fabTrainingPage'],
-                  );
+                  _trigger.resume();
+                  // rxModel.setState((s) => s.nextTask());
                   break;
                 case TrainingProcessState.Done:
-                  rxModel.setState(
-                    (s) => s.processState = TrainingProcessState.Ready,
-                    filterTags: ['fabTrainingPage'],
-                  );
+                  _trigger.repeat();
                   break;
               }
             },

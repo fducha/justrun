@@ -1,4 +1,3 @@
-import 'package:justrun/features/justrun/domain/training_process_bloc.dart';
 import 'package:meta/meta.dart';
 
 import '../entities/training.dart';

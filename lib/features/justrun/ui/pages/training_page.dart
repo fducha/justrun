@@ -66,6 +66,7 @@ class TrainingPage extends StatelessWidget {
           onData: (pureModel) => FloatingActionButton.extended(
             backgroundColor: Colors.red,
             onPressed: () {
+              // rxModel.setState((s) => s.nextTask());
               switch (pureModel.processState) {
                 case TrainingProcessState.Ready:
                   rxModel.setState(
@@ -96,9 +97,7 @@ class TrainingPage extends StatelessWidget {
             icon: _getFABIcon(context, pureModel.processState),
             label: Text(
               _getFABText(context, pureModel.processState),
-              style: Theme.of(context)
-                  .textTheme
-                  .body1
+              style: Theme.of(context).textTheme.body1
                   .copyWith(fontSize: 28.0, color: Colors.white),
             ),
           ),

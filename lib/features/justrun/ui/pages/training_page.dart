@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:justrun/features/justrun/ui/triggers/training_model_trigger.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../../../../core/localization/app_localization.dart';
 import '../../../../core/utils/utils.dart';
 import '../../domain/entities/task.dart';
+import '../../domain/pure_models/process_state.dart';
 import '../../domain/pure_models/training_model.dart';
+import '../triggers/training_model_trigger.dart';
 
 class TrainingPage extends StatelessWidget {
   final TrainingModelTrigger _trigger = TrainingModelTrigger();
@@ -67,19 +68,19 @@ class TrainingPage extends StatelessWidget {
             backgroundColor: Colors.red,
             onPressed: () {
               switch (pureModel.processState) {
-                case TrainingProcessState.Ready:
+                case ProcessState.Ready:
                   _trigger.start();
                   // rxModel.setState((s) => s.nextTask());
                   break;
-                case TrainingProcessState.InProcess:
+                case ProcessState.InProcess:
                   _trigger.pause();
                   // rxModel.setState((s) => s.nextTask());
                   break;
-                case TrainingProcessState.Paused:
+                case ProcessState.Paused:
                   _trigger.resume();
                   // rxModel.setState((s) => s.nextTask());
                   break;
-                case TrainingProcessState.Done:
+                case ProcessState.Done:
                   _trigger.repeat();
                   break;
               }
@@ -168,30 +169,30 @@ class TrainingPage extends StatelessWidget {
     );
   }
 
-  String _getFABText(BuildContext context, TrainingProcessState state) {
+  String _getFABText(BuildContext context, ProcessState state) {
     switch (state) {
-      case TrainingProcessState.Ready:
+      case ProcessState.Ready:
         return AppLocalization.of(context).fabTrainingPageStartText;
-      case TrainingProcessState.InProcess:
+      case ProcessState.InProcess:
         return AppLocalization.of(context).fabTrainingPagePauseText;
-      case TrainingProcessState.Paused:
+      case ProcessState.Paused:
         return AppLocalization.of(context).fabTrainingPageResumeText;
-      case TrainingProcessState.Done:
+      case ProcessState.Done:
         return AppLocalization.of(context).fabTrainingPageRepeatText;
       default:
         return AppLocalization.of(context).fabTrainingPageStopText;
     }
   }
 
-  Icon _getFABIcon(BuildContext context, TrainingProcessState state) {
+  Icon _getFABIcon(BuildContext context, ProcessState state) {
     switch (state) {
-      case TrainingProcessState.Ready:
+      case ProcessState.Ready:
         return Icon(Icons.play_arrow, size: 36.0);
-      case TrainingProcessState.InProcess:
+      case ProcessState.InProcess:
         return Icon(Icons.pause, size: 36.0);
-      case TrainingProcessState.Paused:
+      case ProcessState.Paused:
         return Icon(Icons.play_arrow, size: 36.0);
-      case TrainingProcessState.Done:
+      case ProcessState.Done:
         return Icon(Icons.replay, size: 36.0);
       default:
         return Icon(Icons.stop, size: 36.0);

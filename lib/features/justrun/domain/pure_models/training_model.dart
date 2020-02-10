@@ -2,19 +2,13 @@ import 'package:meta/meta.dart';
 
 import '../entities/training.dart';
 import '../repositories/repository.dart';
-
-enum TrainingProcessState {
-  Ready,
-  InProcess,
-  Paused,
-  Done,
-}
+import 'process_state.dart';
 
 class TrainingModel {
   final Repository repository;
   
   Training _training;
-  TrainingProcessState _processState = TrainingProcessState.Ready;
+  ProcessState _processState = ProcessState.Ready;
 
   TrainingModel({@required this.repository});
 
@@ -24,13 +18,13 @@ class TrainingModel {
 
   Training get training => _training;
   
-  TrainingProcessState get processState => _processState;
-  set processState(TrainingProcessState state) {
+  ProcessState get processState => _processState;
+  set processState(ProcessState state) {
     _processState = state;
   }
 
   void nextTask() {
     if (_training.tasks.length > 0) _training.tasks.removeAt(0);
-    if (_training.tasks.length == 0) _processState = TrainingProcessState.Done;
+    if (_training.tasks.length == 0) _processState = ProcessState.Done;
   }
 }

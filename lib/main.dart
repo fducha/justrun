@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:justrun/features/justrun/data/repositories/repository_impl.dart';
-import 'package:justrun/features/justrun/domain/pure_models/training_model.dart';
-import 'package:justrun/features/justrun/domain/repositories/repository.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 import 'core/localization/app_localization.dart';
+import 'features/justrun/data/repositories/repository_impl.dart';
+import 'features/justrun/domain/pure_models/task_model.dart';
+import 'features/justrun/domain/pure_models/training_model.dart';
+import 'features/justrun/domain/repositories/repository.dart';
 import 'features/justrun/ui/pages/training_page.dart';
 
 void main() {
@@ -24,6 +25,7 @@ class JustRunApp extends StatelessWidget {
     return Injector(
       inject: [
         Inject(() => TrainingModel(repository: repository)),
+        Inject(() => TaskModel()),
       ],
       builder: (context) => MaterialApp(
         // debugShowMaterialGrid: true,

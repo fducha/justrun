@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:justrun/features/justrun/domain/pure_models/task_model.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../../../../core/localization/app_localization.dart';
@@ -70,15 +71,12 @@ class TrainingPage extends StatelessWidget {
               switch (pureModel.processState) {
                 case ProcessState.Ready:
                   _trigger.start();
-                  // rxModel.setState((s) => s.nextTask());
                   break;
                 case ProcessState.InProcess:
                   _trigger.pause();
-                  // rxModel.setState((s) => s.nextTask());
                   break;
                 case ProcessState.Paused:
                   _trigger.resume();
-                  // rxModel.setState((s) => s.nextTask());
                   break;
                 case ProcessState.Done:
                   _trigger.repeat();
@@ -88,7 +86,9 @@ class TrainingPage extends StatelessWidget {
             icon: _getFABIcon(context, pureModel.processState),
             label: Text(
               _getFABText(context, pureModel.processState),
-              style: Theme.of(context).textTheme.body1
+              style: Theme.of(context)
+                  .textTheme
+                  .body1
                   .copyWith(fontSize: 28.0, color: Colors.white),
             ),
           ),
@@ -143,9 +143,19 @@ class TrainingPage extends StatelessWidget {
               ),
             ),
             Align(
-              child: Text(
-                timeToString(task.duration),
-                style: style,
+              child: StateBuilder<TaskModel>(
+                models: [Injector.getAsReactive<TaskModel>()],
+                tag: ['current_task'],
+                builder: (context, rxTaskModel) =>
+                    rxTaskModel.whenConnectionState(
+                  onIdle: () => Container(),
+                  onWaiting: () => Container(),
+                  onError: (error) => Center(child: Text(error.toString())),
+                  onData: (pureModel) => Text(
+                    timeToString(pureModel.time),
+                    style: style,
+                  ),
+                ),
               ),
             ),
             Align(

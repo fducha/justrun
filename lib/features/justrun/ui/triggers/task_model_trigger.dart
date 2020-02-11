@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:meta/meta.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../../domain/entities/task.dart';
@@ -6,21 +9,45 @@ import '../../domain/pure_models/task_model.dart';
 
 class TaskModelTrigger {
   final ReactiveModel<TaskModel> _rxModel;
+  final Function onDoneTask;
 
-  TaskModelTrigger() : _rxModel = Injector.getAsReactive<TaskModel>();
+  TaskModelTrigger({@required this.onDoneTask})
+      : _rxModel = Injector.getAsReactive<TaskModel>();
 
   ReactiveModel<TaskModel> get rxModel => _rxModel;
   ProcessState get processState => _rxModel.state.processState;
-  Task get task => _rxModel.state.task;
-  int get time => _rxModel.state.time;
-  set time(int t) => _rxModel.setState((s) => s.time = t);
 
-  // Task task(int index) => _rxModel.state.training.tasks[index];
-  // int get taskCount => _rxModel.state.training.tasks.length;
-  // Task get currentTask => taskCount > 0 ? task(0) : null;
+  Task get task => _rxModel.state.task;
+  void setTask(Task task) => _rxModel.setState((s) => s.task = task);
+
+  int get time => _rxModel.state.time;
+
+  Stream<int> _tickStream;
+  StreamSubscription<int> _tickSubsription;
 
   void start() {
     if (processState == ProcessState.Ready) {
+      _tickStream = Stream.periodic(
+        Duration(seconds: 1),
+        (x) => x,
+      ).take(task.duration);
+
+      _tickSubsription = _tickStream.listen(
+        (int time) => _rxModel.setState(
+          (s) {
+            s.time = time;
+            return s.processState = ProcessState.InProcess;
+          },
+          filterTags: ['current_task'],
+        ),
+        onDone: () {
+          _tickSubsription.cancel();
+          _tickSubsription = null;
+          _rxModel.setState((s) => s.processState = ProcessState.Done);
+          onDoneTask();
+        },
+      );
+
       rxModel.setState(
         (s) => s.processState = ProcessState.InProcess,
       );

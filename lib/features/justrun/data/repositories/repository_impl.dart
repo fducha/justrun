@@ -17,15 +17,14 @@ class RepositoryImpl implements Repository {
       title: 'Walking',
       color: Colors.pink[300],
     );
-    final List<Task> tasks = [
-      Task(exercise: running, duration: 20),
-      Task(exercise: walking, duration: 20),
-      Task(exercise: running, duration: 20),
-      Task(exercise: walking, duration: 20),
-      Task(exercise: running, duration: 20),
-      Task(exercise: walking, duration: 20),
-    ];
 
-    return Training(tasks);
+    return Training(<Task>[
+      Task(exercise: running, duration: 20),
+      Task(exercise: walking, duration: 20),
+      Task(exercise: running, duration: 20),
+      Task(exercise: walking, duration: 20),
+      Task(exercise: running, duration: 20),
+      Task(exercise: walking, duration: 20),
+    ]);
   }
 }

@@ -12,17 +12,23 @@ class TrainingModelTrigger {
   int _currentTaskTime = 0;
 
   TrainingModelTrigger() : _rxModel = Injector.getAsReactive<TrainingModel>() {
-    if (currentTask != null) {
-      _currentTaskTime = currentTask.duration;
-    }
+    // if (currentTask != null) {
+    _currentTaskTime = currentTask.duration;
+    // }
     _ticker = Ticker(
       duration: _rxModel.state.trainingTime,
       onTick: (int tick) {
-        int outTime = _currentTaskTime - (tick - _doneTasksTime);
-        print(outTime);
-        if (outTime == 0) {
-          _doneTasksTime = currentTask.duration;
-          _ticker.stop();
+        int taskTime = _currentTaskTime - (tick - _doneTasksTime) - 1;
+        rxModel.setState(
+          (s) => s.currentTaskTime = taskTime,
+          filterTags: ['currentTask'],
+        );
+        if (taskTime == -1 && rxModel.state.training.tasks.length > 0) {
+          _doneTasksTime += currentTask.duration;
+          rxModel.setState(
+            (s) => s.nextTask(),
+            onSetState: (context) => _currentTaskTime = currentTask.duration,
+          );
         }
       },
     );
@@ -31,37 +37,37 @@ class TrainingModelTrigger {
   ReactiveModel<TrainingModel> get rxModel => _rxModel;
   ProcessState get processState => _rxModel.state.processState;
 
-  Task task(int index) => _rxModel.state.training.tasks[index];
-  int get taskCount => _rxModel.state.training.tasks.length;
-  Task get currentTask => taskCount > 0 ? task(0) : null;
+  // Task task(int index) => _rxModel.state.training.tasks[index];
+  // int get taskCount => _rxModel.state.training.tasks.length;
+  Task get currentTask => _rxModel.state.training.tasks[0];
 
   void start() {
+    _ticker.start();
     if (processState == ProcessState.Ready) {
       rxModel.setState(
         (s) => s.processState = ProcessState.InProcess,
         filterTags: ['fabTrainingPage'],
       );
-      _ticker.start();
     }
   }
 
   void pause() {
+    _ticker.pause();
     if (processState == ProcessState.InProcess) {
       rxModel.setState(
         (s) => s.processState = ProcessState.Paused,
         filterTags: ['fabTrainingPage'],
       );
-      _ticker.pause();
     }
   }
 
   void resume() {
+    _ticker.resume();
     if (processState == ProcessState.Paused) {
       rxModel.setState(
         (s) => s.processState = ProcessState.InProcess,
         filterTags: ['fabTrainingPage'],
       );
-      _ticker.resume();
     }
   }
 

@@ -4,7 +4,6 @@ import 'package:states_rebuilder/states_rebuilder.dart';
 
 import 'core/localization/app_localization.dart';
 import 'features/justrun/data/repositories/repository_impl.dart';
-import 'features/justrun/domain/pure_models/task_model.dart';
 import 'features/justrun/domain/pure_models/training_model.dart';
 import 'features/justrun/domain/repositories/repository.dart';
 import 'features/justrun/ui/pages/training_page.dart';
@@ -49,7 +48,8 @@ class JustRunApp extends StatelessWidget {
         ),
         home: StateBuilder<TrainingModel>(
           models: [Injector.getAsReactive<TrainingModel>()],
-          initState: (context, rxTrainingModel) => rxTrainingModel.setState((s) => s.fetch()),
+          initState: (context, rxTrainingModel) =>
+              rxTrainingModel.setState((s) async => await s.fetch()),
           builder: (context, rxTrainingModel) => TrainingPage(),
         ),
       ),

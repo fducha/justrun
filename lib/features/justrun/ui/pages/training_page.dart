@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:justrun/features/justrun/domain/pure_models/task_model.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../../../../core/localization/app_localization.dart';
@@ -9,15 +8,23 @@ import '../../domain/pure_models/process_state.dart';
 import '../../domain/pure_models/training_model.dart';
 import '../triggers/training_model_trigger.dart';
 
-class TrainingPage extends StatelessWidget {
-  final TrainingModelTrigger _trigger = TrainingModelTrigger();
+class TrainingPage extends StatefulWidget {
 
   TrainingPage({Key key}) : super(key: key);
+
+  @override
+  _TrainingPageState createState() => _TrainingPageState();
+}
+
+class _TrainingPageState extends State<TrainingPage> {
+  final TrainingModelTrigger _trigger = TrainingModelTrigger();
 
   @override
   Widget build(BuildContext context) {
     double itemHeight = MediaQuery.of(context).size.height / 10;
     double itemWidth = MediaQuery.of(context).size.width - 16.0;
+
+    final rxTrainingModel = Injector.getAsReactive<TrainingModel>();
 
     return Scaffold(
       appBar: AppBar(
@@ -25,18 +32,20 @@ class TrainingPage extends StatelessWidget {
         centerTitle: true,
       ),
       body: StateBuilder<TrainingModel>(
-        models: [_trigger.rxModel],
+        models: [rxTrainingModel],
         builder: (context, rxModel) => rxModel.whenConnectionState(
           onIdle: () => Container(),
           onWaiting: () => Center(child: CircularProgressIndicator()),
-          onError: (error) => Center(child: Text(error.toString())),
+          onError: (error) => Center(child: Text('${error.toString()} hello')),
           onData: (TrainingModel pureModel) => ListView.builder(
             padding: EdgeInsets.all(8.0),
-            itemCount: _trigger.taskCount,
+            // itemCount: _trigger.taskCount,
+            itemCount: pureModel.training.tasks.length,
             itemBuilder: (context, index) {
               return index == 0
                   ? _buildCurrentItem(
-                      _trigger.currentTask,
+                      // _trigger.currentTask,
+                      pureModel.training.tasks[0],
                       index,
                       itemHeight * 2,
                       itemWidth,
@@ -46,7 +55,8 @@ class TrainingPage extends StatelessWidget {
                           ),
                     )
                   : _buildItem(
-                      _trigger.task(index),
+                      // _trigger.task(index),
+                      pureModel.training.tasks[index],
                       index,
                       itemHeight,
                       Theme.of(context).textTheme.body1.copyWith(
@@ -142,22 +152,22 @@ class TrainingPage extends StatelessWidget {
                 ),
               ),
             ),
-            // Align(
-            //   child: StateBuilder<TaskModel>(
-            //     models: [Injector.getAsReactive<TaskModel>()],
-            //     tag: ['current_task'],
-            //     builder: (context, rxTaskModel) =>
-            //         rxTaskModel.whenConnectionState(
-            //       onIdle: () => Container(),
-            //       onWaiting: () => Container(),
-            //       onError: (error) => Center(child: Text(error.toString())),
-            //       onData: (pureModel) => Text(
-            //         timeToString(pureModel.time),
-            //         style: style,
-            //       ),
-            //     ),
-            //   ),
-            // ),
+            Align(
+              child: StateBuilder<TrainingModel>(
+                models: [Injector.getAsReactive<TrainingModel>()],
+                tag: ['currentTask'],
+                builder: (context, rxModel) =>
+                    rxModel.whenConnectionState(
+                  onIdle: () => Container(),
+                  onWaiting: () => Container(),
+                  onError: (error) => Center(child: Text('${error.toString()} hello')),
+                  onData: (pureModel) => Text(
+                    timeToString(pureModel.currentTaskTime),
+                    style: style,
+                  ),
+                ),
+              ),
+            ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(

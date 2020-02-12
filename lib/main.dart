@@ -25,7 +25,6 @@ class JustRunApp extends StatelessWidget {
     return Injector(
       inject: [
         Inject(() => TrainingModel(repository: repository)),
-        Inject(() => TaskModel()),
       ],
       builder: (context) => MaterialApp(
         // debugShowMaterialGrid: true,

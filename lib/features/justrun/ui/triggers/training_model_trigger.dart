@@ -1,20 +1,31 @@
-import 'package:justrun/features/justrun/ui/triggers/task_model_trigger.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
+import '../../../../core/utils/ticker.dart';
 import '../../domain/entities/task.dart';
 import '../../domain/pure_models/process_state.dart';
 import '../../domain/pure_models/training_model.dart';
 
 class TrainingModelTrigger {
   final ReactiveModel<TrainingModel> _rxModel;
-  TaskModelTrigger _taskTrigger;
+  Ticker _ticker;
+  int _doneTasksTime = 0;
+  int _currentTaskTime = 0;
 
   TrainingModelTrigger() : _rxModel = Injector.getAsReactive<TrainingModel>() {
-    _taskTrigger = TaskModelTrigger(onDoneTask: () {
-      rxModel.setState((s) => s.nextTask());
-      _taskTrigger.setTask(currentTask);
-    });
-    if (currentTask != null) _taskTrigger.setTask(currentTask);
+    if (currentTask != null) {
+      _currentTaskTime = currentTask.duration;
+    }
+    _ticker = Ticker(
+      duration: _rxModel.state.trainingTime,
+      onTick: (int tick) {
+        int outTime = _currentTaskTime - (tick - _doneTasksTime);
+        print(outTime);
+        if (outTime == 0) {
+          _doneTasksTime = currentTask.duration;
+          _ticker.stop();
+        }
+      },
+    );
   }
 
   ReactiveModel<TrainingModel> get rxModel => _rxModel;
@@ -30,7 +41,7 @@ class TrainingModelTrigger {
         (s) => s.processState = ProcessState.InProcess,
         filterTags: ['fabTrainingPage'],
       );
-      _taskTrigger.start();
+      _ticker.start();
     }
   }
 
@@ -40,6 +51,7 @@ class TrainingModelTrigger {
         (s) => s.processState = ProcessState.Paused,
         filterTags: ['fabTrainingPage'],
       );
+      _ticker.pause();
     }
   }
 
@@ -49,6 +61,7 @@ class TrainingModelTrigger {
         (s) => s.processState = ProcessState.InProcess,
         filterTags: ['fabTrainingPage'],
       );
+      _ticker.resume();
     }
   }
 

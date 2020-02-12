@@ -142,22 +142,22 @@ class TrainingPage extends StatelessWidget {
                 ),
               ),
             ),
-            Align(
-              child: StateBuilder<TaskModel>(
-                models: [Injector.getAsReactive<TaskModel>()],
-                tag: ['current_task'],
-                builder: (context, rxTaskModel) =>
-                    rxTaskModel.whenConnectionState(
-                  onIdle: () => Container(),
-                  onWaiting: () => Container(),
-                  onError: (error) => Center(child: Text(error.toString())),
-                  onData: (pureModel) => Text(
-                    timeToString(pureModel.time),
-                    style: style,
-                  ),
-                ),
-              ),
-            ),
+            // Align(
+            //   child: StateBuilder<TaskModel>(
+            //     models: [Injector.getAsReactive<TaskModel>()],
+            //     tag: ['current_task'],
+            //     builder: (context, rxTaskModel) =>
+            //         rxTaskModel.whenConnectionState(
+            //       onIdle: () => Container(),
+            //       onWaiting: () => Container(),
+            //       onError: (error) => Center(child: Text(error.toString())),
+            //       onData: (pureModel) => Text(
+            //         timeToString(pureModel.time),
+            //         style: style,
+            //       ),
+            //     ),
+            //   ),
+            // ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(

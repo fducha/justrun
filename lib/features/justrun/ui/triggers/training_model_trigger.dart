@@ -14,6 +14,7 @@ class TrainingModelTrigger {
     _ticker = Ticker(
       duration: _rxModel.state.trainingTime,
       onTick: (int tick) {
+        print(tick);
         int taskTime = currentTask.duration - (tick - _doneTasksTime);
         rxModel.setState(
           (s) => s.currentTaskTime = taskTime,
@@ -26,8 +27,10 @@ class TrainingModelTrigger {
 
           if (rxModel.state.training.tasks.isNotEmpty)
             _onTaskStarted();
-          else
+          else {
             _onTrainingEnded();
+            _ticker.stop();
+          }
         }
       },
     );
@@ -46,8 +49,8 @@ class TrainingModelTrigger {
         (s) => s.processState = ProcessState.InProcess,
         filterTags: ['fabTrainingPage'],
       );
-      _ticker.start(delay: 5);
-      await _onTrainingStarted();
+      _ticker.start();
+      // await _onTrainingStarted();
     }
   }
 

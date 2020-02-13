@@ -14,14 +14,11 @@ class Ticker {
     @required this.onTick,
   });
 
-  void start({int delay = 0}) {
+  void start() {
     _tickStream = Stream.periodic(
       Duration(seconds: 1),
-      (x) {
-        print(x);
-        return x - delay + 1;
-      },
-    ).take(duration + delay + 1).skip(delay);
+      (x) => x + 1,
+    ).take(duration + 1);
 
     _tickSubsription = _tickStream.listen(
       (int x) => onTick(x),

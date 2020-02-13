@@ -39,13 +39,11 @@ class _TrainingPageState extends State<TrainingPage> {
           onError: (error) => Center(child: Text('${error.toString()} hello')),
           onData: (TrainingModel pureModel) => ListView.builder(
             padding: EdgeInsets.all(8.0),
-            // itemCount: _trigger.taskCount,
-            itemCount: pureModel.training.tasks.length,
+            itemCount: _trigger.taskCount,
             itemBuilder: (context, index) {
               return index == 0
                   ? _buildCurrentItem(
-                      // _trigger.currentTask,
-                      pureModel.training.tasks[0],
+                      _trigger.currentTask,
                       index,
                       itemHeight * 2,
                       itemWidth,
@@ -55,8 +53,7 @@ class _TrainingPageState extends State<TrainingPage> {
                           ),
                     )
                   : _buildItem(
-                      // _trigger.task(index),
-                      pureModel.training.tasks[index],
+                      _trigger.task(index),
                       index,
                       itemHeight,
                       Theme.of(context).textTheme.body1.copyWith(

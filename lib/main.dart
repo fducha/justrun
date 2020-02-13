@@ -26,7 +26,6 @@ class JustRunApp extends StatelessWidget {
         Inject(() => TrainingModel(repository: repository)),
       ],
       builder: (context) => MaterialApp(
-        // debugShowMaterialGrid: true,
         supportedLocales: [
           Locale('en'),
           Locale('ru'),
@@ -50,8 +49,36 @@ class JustRunApp extends StatelessWidget {
           models: [Injector.getAsReactive<TrainingModel>()],
           initState: (context, rxTrainingModel) =>
               rxTrainingModel.setState((s) async => await s.fetch()),
-          builder: (context, rxTrainingModel) => TrainingPage(),
+          builder: (context, rxTrainingModel) =>
+              rxTrainingModel.whenConnectionState(
+            onIdle: () => EmptyScaffold(child: Text('nothing\'s happening')),
+            onWaiting: () => EmptyScaffold(child: CircularProgressIndicator()),
+            onError: (error) => EmptyScaffold(child: Text(error.toString())),
+            onData: (_) => TrainingPage(),
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class EmptyScaffold extends StatelessWidget {
+  final Widget child;
+
+  const EmptyScaffold({
+    Key key,
+    @required this.child,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalization.of(context).appTitle),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: child,
       ),
     );
   }

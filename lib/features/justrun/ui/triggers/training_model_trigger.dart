@@ -12,9 +12,9 @@ class TrainingModelTrigger {
   int _currentTaskTime = 0;
 
   TrainingModelTrigger() : _rxModel = Injector.getAsReactive<TrainingModel>() {
-    // if (currentTask != null) {
-    _currentTaskTime = currentTask.duration;
-    // }
+    if (currentTask != null) {
+      _currentTaskTime = currentTask.duration;
+    }
     _ticker = Ticker(
       duration: _rxModel.state.trainingTime,
       onTick: (int tick) {
@@ -37,8 +37,8 @@ class TrainingModelTrigger {
   ReactiveModel<TrainingModel> get rxModel => _rxModel;
   ProcessState get processState => _rxModel.state.processState;
 
-  // Task task(int index) => _rxModel.state.training.tasks[index];
-  // int get taskCount => _rxModel.state.training.tasks.length;
+  Task task(int index) => _rxModel.state.training.tasks[index];
+  int get taskCount => _rxModel.state.training.tasks.length;
   Task get currentTask => _rxModel.state.training.tasks[0];
 
   void start() {

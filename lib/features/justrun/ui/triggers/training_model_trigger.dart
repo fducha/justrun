@@ -14,16 +14,20 @@ class TrainingModelTrigger {
     _ticker = Ticker(
       duration: _rxModel.state.trainingTime,
       onTick: (int tick) {
-        int taskTime = currentTask.duration - (tick - _doneTasksTime) - 1;
+        int taskTime = currentTask.duration - (tick - _doneTasksTime);
         rxModel.setState(
           (s) => s.currentTaskTime = taskTime,
           filterTags: ['currentTask'],
         );
-        if (taskTime == 0) {
-          if (rxModel.state.training.tasks.isNotEmpty) {
-            _doneTasksTime += currentTask.duration;
-          }
+        if (taskTime <= 0) {
+          _doneTasksTime += currentTask.duration;
+
           rxModel.setState((s) => s.nextTask());
+
+          if (rxModel.state.training.tasks.isNotEmpty)
+            _onTaskStarted();
+          else
+            _onTrainingEnded();
         }
       },
     );
@@ -36,18 +40,19 @@ class TrainingModelTrigger {
   int get taskCount => _rxModel.state.training.tasks.length;
   Task get currentTask => _rxModel.state.training.tasks[0];
 
-  void start() {
-    _ticker.start();
+  void start() async {
     if (processState == ProcessState.Ready) {
       rxModel.setState(
         (s) => s.processState = ProcessState.InProcess,
         filterTags: ['fabTrainingPage'],
       );
+      _ticker.start(delay: 5);
+      await _onTrainingStarted();
     }
   }
 
   void pause() {
-    _ticker.pause();
+    if (_ticker != null) _ticker.pause();
     if (processState == ProcessState.InProcess) {
       rxModel.setState(
         (s) => s.processState = ProcessState.Paused,
@@ -78,5 +83,31 @@ class TrainingModelTrigger {
       );
       rxModel.setState((s) => s.fetch());
     }
+  }
+
+  void _getSound(String text) {
+    print('Sounded ... $text');
+  }
+
+  Future _onTrainingStarted() async {
+    _getSound('Ready');
+    for (var i = 3; i > 0; i--) {
+      await Future.delayed(Duration(seconds: 1));
+      _getSound('$i');
+    }
+    await Future.delayed(Duration(seconds: 1));
+    _getSound('Start');
+    await Future.delayed(Duration(seconds: 1));
+    _onTaskStarted();
+  }
+
+  void _onTaskStarted() {
+    _getSound('beep');
+    _getSound('Task started');
+  }
+
+  void _onTrainingEnded() {
+    _getSound('beep');
+    _getSound('Training done');
   }
 }

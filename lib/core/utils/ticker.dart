@@ -18,7 +18,7 @@ class Ticker {
     _tickStream = Stream.periodic(
       Duration(seconds: 1),
       (x) => x,
-    ).take(duration);
+    ).take(duration + 1);
 
     _tickSubsription = _tickStream.listen(
       (int x) => onTick(x),

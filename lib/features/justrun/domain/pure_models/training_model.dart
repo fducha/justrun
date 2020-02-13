@@ -20,7 +20,6 @@ class TrainingModel {
     if (_training.tasks != null && _training.tasks.length > 0) {
       currentTaskTime = _training.tasks[0].duration;
       for (var task in _training.tasks) _trainingTime += task.duration;
-      _trainingTime += _training.tasks.length - 1;
     }
   }
 
@@ -29,7 +28,12 @@ class TrainingModel {
   int get trainingTime => _trainingTime;
 
   void nextTask() {
-    if (_training.tasks.length > 0) _training.tasks.removeAt(0);
-    if (_training.tasks.length == 0) processState = ProcessState.Done;
+    if (_training.tasks.isNotEmpty) {
+      _training.tasks.removeAt(0);
+    }
+    if (_training.tasks.isNotEmpty) {
+      currentTaskTime = _training.tasks[0].duration;
+    }
+    if (_training.tasks.isEmpty) processState = ProcessState.Done;
   }
 }

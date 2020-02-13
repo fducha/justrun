@@ -9,26 +9,21 @@ class TrainingModelTrigger {
   final ReactiveModel<TrainingModel> _rxModel;
   Ticker _ticker;
   int _doneTasksTime = 0;
-  int _currentTaskTime = 0;
 
   TrainingModelTrigger() : _rxModel = Injector.getAsReactive<TrainingModel>() {
-    if (currentTask != null) {
-      _currentTaskTime = currentTask.duration;
-    }
     _ticker = Ticker(
       duration: _rxModel.state.trainingTime,
       onTick: (int tick) {
-        int taskTime = _currentTaskTime - (tick - _doneTasksTime) - 1;
+        int taskTime = currentTask.duration - (tick - _doneTasksTime) - 1;
         rxModel.setState(
           (s) => s.currentTaskTime = taskTime,
           filterTags: ['currentTask'],
         );
-        if (taskTime == -1 && rxModel.state.training.tasks.length > 0) {
-          _doneTasksTime += currentTask.duration;
-          rxModel.setState(
-            (s) => s.nextTask(),
-            onSetState: (context) => _currentTaskTime = currentTask.duration,
-          );
+        if (taskTime == 0) {
+          if (rxModel.state.training.tasks.isNotEmpty) {
+            _doneTasksTime += currentTask.duration;
+          }
+          rxModel.setState((s) => s.nextTask());
         }
       },
     );

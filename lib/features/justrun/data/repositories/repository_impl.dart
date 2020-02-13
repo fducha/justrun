@@ -7,7 +7,7 @@ import 'package:justrun/features/justrun/domain/repositories/repository.dart';
 class RepositoryImpl implements Repository {
   @override
   Future<Training> getAllTrainings() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(milliseconds: 500));
 
     final running = Exercise(
       title: 'Running',
@@ -19,12 +19,12 @@ class RepositoryImpl implements Repository {
     );
 
     return Training(<Task>[
-      Task(exercise: running, duration: 20),
-      Task(exercise: walking, duration: 20),
-      Task(exercise: running, duration: 20),
-      Task(exercise: walking, duration: 20),
-      Task(exercise: running, duration: 20),
-      Task(exercise: walking, duration: 20),
+      Task(exercise: running, duration: 10),
+      Task(exercise: walking, duration: 10),
+      // Task(exercise: running, duration: 20),
+      // Task(exercise: walking, duration: 20),
+      // Task(exercise: running, duration: 20),
+      // Task(exercise: walking, duration: 20),
     ]);
   }
 }

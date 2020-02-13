@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hv_progress_indicator/hv_progress_indicator.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../../../../core/localization/app_localization.dart';
@@ -9,7 +10,6 @@ import '../../domain/pure_models/training_model.dart';
 import '../triggers/training_model_trigger.dart';
 
 class TrainingPage extends StatefulWidget {
-
   TrainingPage({Key key}) : super(key: key);
 
   @override
@@ -33,71 +33,61 @@ class _TrainingPageState extends State<TrainingPage> {
       ),
       body: StateBuilder<TrainingModel>(
         models: [rxTrainingModel],
-        builder: (context, rxModel) => rxModel.whenConnectionState(
-          onIdle: () => Container(),
-          onWaiting: () => Center(child: CircularProgressIndicator()),
-          onError: (error) => Center(child: Text('${error.toString()} hello')),
-          onData: (TrainingModel pureModel) => ListView.builder(
-            padding: EdgeInsets.all(8.0),
-            itemCount: _trigger.taskCount,
-            itemBuilder: (context, index) {
-              return index == 0
-                  ? _buildCurrentItem(
-                      _trigger.currentTask,
-                      index,
-                      itemHeight * 2,
-                      itemWidth,
-                      Theme.of(context).textTheme.body1.copyWith(
-                            fontSize: 48,
-                            color: Colors.white,
-                          ),
-                    )
-                  : _buildItem(
-                      _trigger.task(index),
-                      index,
-                      itemHeight,
-                      Theme.of(context).textTheme.body1.copyWith(
-                            fontSize: 26,
-                            color: Colors.white,
-                          ),
-                    );
-            },
-          ),
+        builder: (context, rxModel) => ListView.builder(
+          padding: EdgeInsets.all(8.0),
+          itemCount: _trigger.taskCount,
+          itemBuilder: (context, index) {
+            return index == 0
+                ? _buildCurrentItem(
+                    _trigger.currentTask,
+                    index,
+                    itemHeight * 2,
+                    itemWidth,
+                    Theme.of(context).textTheme.body1.copyWith(
+                          fontSize: 48,
+                          color: Colors.white,
+                        ),
+                  )
+                : _buildItem(
+                    _trigger.task(index),
+                    index,
+                    itemHeight,
+                    Theme.of(context).textTheme.body1.copyWith(
+                          fontSize: 26,
+                          color: Colors.white,
+                        ),
+                  );
+          },
         ),
       ),
       floatingActionButton: StateBuilder<TrainingModel>(
         models: [_trigger.rxModel],
         tag: ['fabTrainingPage'],
-        builder: (context, rxModel) => rxModel.whenConnectionState(
-          onIdle: () => Container(),
-          onWaiting: () => Container(),
-          onError: (error) => Center(child: Text(error.toString())),
-          onData: (pureModel) => FloatingActionButton.extended(
-            backgroundColor: Colors.red,
-            onPressed: () {
-              switch (pureModel.processState) {
-                case ProcessState.Ready:
-                  _trigger.start();
-                  break;
-                case ProcessState.InProcess:
-                  _trigger.pause();
-                  break;
-                case ProcessState.Paused:
-                  _trigger.resume();
-                  break;
-                case ProcessState.Done:
-                  _trigger.repeat();
-                  break;
-              }
-            },
-            icon: _getFABIcon(context, pureModel.processState),
-            label: Text(
-              _getFABText(context, pureModel.processState),
-              style: Theme.of(context)
-                  .textTheme
-                  .body1
-                  .copyWith(fontSize: 28.0, color: Colors.white),
-            ),
+        builder: (context, rxModel) => FloatingActionButton.extended(
+          backgroundColor: Colors.red,
+          onPressed: () {
+            switch (rxModel.state.processState) {
+              case ProcessState.Ready:
+                _trigger.start();
+                break;
+              case ProcessState.InProcess:
+                _trigger.pause();
+                break;
+              case ProcessState.Paused:
+                _trigger.resume();
+                break;
+              case ProcessState.Done:
+                _trigger.repeat();
+                break;
+            }
+          },
+          icon: _getFABIcon(context, rxModel.state.processState),
+          label: Text(
+            _getFABText(context, rxModel.state.processState),
+            style: Theme.of(context)
+                .textTheme
+                .body1
+                .copyWith(fontSize: 28.0, color: Colors.white),
           ),
         ),
       ),
@@ -108,6 +98,8 @@ class _TrainingPageState extends State<TrainingPage> {
   Widget _buildItem(Task task, int index, double height, TextStyle style) {
     return Card(
       color: task.exercise.color,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(height / 5)),
       child: Container(
         height: height,
         padding: EdgeInsets.symmetric(horizontal: 36.0),
@@ -131,6 +123,8 @@ class _TrainingPageState extends State<TrainingPage> {
   Widget _buildCurrentItem(
       Task task, int index, double height, double width, TextStyle style) {
     return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(height / 10)),
       color: task.exercise.color,
       child: Container(
         padding: EdgeInsets.all(0.0),
@@ -150,34 +144,45 @@ class _TrainingPageState extends State<TrainingPage> {
               ),
             ),
             Align(
+              alignment: Alignment.topRight,
+              child: StateBuilder<TrainingModel>(
+                models: [Injector.getAsReactive<TrainingModel>()],
+                tag: ['currentTask', 'fabTrainingPage'],
+                builder: (context, rxModel) {
+                  return rxModel.state.processState == ProcessState.Paused
+                      ? Icon(
+                          Icons.pause,
+                          size: height / 2,
+                          color: style.color,
+                        )
+                      : Container();
+                },
+              ),
+            ),
+            Align(
               child: StateBuilder<TrainingModel>(
                 models: [Injector.getAsReactive<TrainingModel>()],
                 tag: ['currentTask'],
-                builder: (context, rxModel) =>
-                    rxModel.whenConnectionState(
-                  onIdle: () => Container(),
-                  onWaiting: () => Container(),
-                  onError: (error) => Center(child: Text('${error.toString()} hello')),
-                  onData: (pureModel) => Text(
-                    timeToString(pureModel.currentTaskTime),
-                    style: style,
-                  ),
+                builder: (context, rxModel) => Text(
+                  timeToString(rxModel.state.currentTaskTime),
+                  style: style,
                 ),
               ),
             ),
             Align(
               alignment: Alignment.bottomCenter,
-              child: Container(
-                height: height / 4,
-                color: Colors.green[300],
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Container(
-                height: height / 4,
-                width: width * 0.67,
-                color: Colors.red,
+              child: StateBuilder<TrainingModel>(
+                models: [Injector.getAsReactive<TrainingModel>()],
+                tag: ['currentTask'],
+                builder: (context, rxModel) => HVProgressIndicator(
+                  width: width,
+                  height: height / 5,
+                  percentage: 100 *
+                      rxModel.state.currentTaskTime /
+                      _trigger.currentTask.duration,
+                  backgroundColor: Colors.amber,
+                  color: Colors.blue,
+                ),
               ),
             ),
           ],

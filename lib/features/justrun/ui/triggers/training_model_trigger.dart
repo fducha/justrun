@@ -9,27 +9,35 @@ class TrainingModelTrigger {
   final ReactiveModel<TrainingModel> _rxModel;
   Ticker _ticker;
   int _doneTasksTime = 0;
+  static const int _countDownTime = 6;
 
   TrainingModelTrigger() : _rxModel = Injector.getAsReactive<TrainingModel>() {
     _ticker = Ticker(
-      duration: _rxModel.state.trainingTime,
+      duration: _rxModel.state.trainingTime + _countDownTime,
       onTick: (int tick) {
         print(tick);
-        int taskTime = currentTask.duration - (tick - _doneTasksTime);
-        rxModel.setState(
-          (s) => s.currentTaskTime = taskTime,
-          filterTags: ['currentTask'],
-        );
-        if (taskTime <= 0) {
-          _doneTasksTime += currentTask.duration;
+        if (tick <= _countDownTime) {
+          _onTrainingStarted(tick);
+        } else {
+          int taskTime =
+              currentTask.duration - (tick - _doneTasksTime - _countDownTime);
+          _onMiddleTime(taskTime, currentTask.duration);
+          rxModel.setState(
+            (s) => s.currentTaskTime = taskTime,
+            filterTags: ['currentTask'],
+          );
+          _onBeforeTrainingEnded(taskTime, currentTask.duration);
+          if (taskTime <= 0) {
+            _doneTasksTime += currentTask.duration;
 
-          rxModel.setState((s) => s.nextTask());
+            rxModel.setState((s) => s.nextTask());
 
-          if (rxModel.state.training.tasks.isNotEmpty)
-            _onTaskStarted();
-          else {
-            _onTrainingEnded();
-            _ticker.stop();
+            if (rxModel.state.training.tasks.isNotEmpty)
+              _onTaskStarted();
+            else {
+              _onTrainingEnded();
+              _ticker.stop();
+            }
           }
         }
       },
@@ -50,7 +58,6 @@ class TrainingModelTrigger {
         filterTags: ['fabTrainingPage'],
       );
       _ticker.start();
-      // await _onTrainingStarted();
     }
   }
 
@@ -92,16 +99,48 @@ class TrainingModelTrigger {
     print('Sounded ... $text');
   }
 
-  Future _onTrainingStarted() async {
-    _getSound('Ready');
-    for (var i = 3; i > 0; i--) {
-      await Future.delayed(Duration(seconds: 1));
-      _getSound('$i');
+  Future _onTrainingStarted(int tick) async {
+    switch (tick) {
+      case 1:
+        _getSound('Ready');
+        break;
+      case 2:
+        _getSound('3');
+        break;
+      case 3:
+        _getSound('2');
+        break;
+      case 4:
+        _getSound('1');
+        break;
+      case 5:
+        _getSound('Start');
+        break;
+      case 6:
+        _onTaskStarted();
+        break;
     }
-    await Future.delayed(Duration(seconds: 1));
-    _getSound('Start');
-    await Future.delayed(Duration(seconds: 1));
-    _onTaskStarted();
+  }
+
+  void _onMiddleTime(int taskTime, int taskDuration) {
+    if (taskTime == (taskDuration / 2)) _getSound('the middle of time');
+  }
+
+  void _onBeforeTrainingEnded(int taskTime, int taskDuration) {
+    switch (taskDuration - taskTime) {
+      case 4:
+        _getSound('stop in');
+        break;
+      case 3:
+        _getSound('3');
+        break;
+      case 2:
+        _getSound('2');
+        break;
+      case 1:
+        _getSound('1');
+        break;
+    }
   }
 
   void _onTaskStarted() {

@@ -12,6 +12,7 @@ dependencies:
   equatable: ^1.0.3
   states_rebuilder: ^1.12.1
   hv_progress_indicator: ^1.0.2
+  audioplayers: ^0.14.0
 
   flutter_localizations:
     sdk: flutter
@@ -27,6 +28,10 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/audio/long_beep.mp3
+    - assets/audio/short_beep.mp3
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -1,5 +1,6 @@
 import 'package:states_rebuilder/states_rebuilder.dart';
 
+import '../../../../core/utils/music_box.dart';
 import '../../../../core/utils/ticker.dart';
 import '../../domain/entities/task.dart';
 import '../../domain/pure_models/process_state.dart';
@@ -9,7 +10,9 @@ class TrainingModelTrigger {
   final ReactiveModel<TrainingModel> _rxModel;
   Ticker _ticker;
   int _doneTasksTime = 0;
-  static const int _countDownTime = 6;
+  static const int _countDownTime = 5;
+
+  final _musicBox = MusicBox();
 
   TrainingModelTrigger() : _rxModel = Injector.getAsReactive<TrainingModel>() {
     _ticker = Ticker(
@@ -106,17 +109,17 @@ class TrainingModelTrigger {
         break;
       case 2:
         _getSound('3');
+        _musicBox.playShortBeep();
         break;
       case 3:
         _getSound('2');
+        _musicBox.playShortBeep();
         break;
       case 4:
         _getSound('1');
+        _musicBox.playShortBeep();
         break;
       case 5:
-        _getSound('Start');
-        break;
-      case 6:
         _onTaskStarted();
         break;
     }
@@ -127,29 +130,32 @@ class TrainingModelTrigger {
   }
 
   void _onBeforeTrainingEnded(int taskTime, int taskDuration) {
-    switch (taskDuration - taskTime) {
+    switch (taskTime) {
       case 4:
         _getSound('stop in');
         break;
       case 3:
         _getSound('3');
+        _musicBox.playShortBeep();
         break;
       case 2:
         _getSound('2');
+        _musicBox.playShortBeep();
         break;
       case 1:
         _getSound('1');
+        _musicBox.playShortBeep();
         break;
     }
   }
 
   void _onTaskStarted() {
-    _getSound('beep');
+    _musicBox.playLongBeep();
     _getSound('Task started');
   }
 
   void _onTrainingEnded() {
-    _getSound('beep');
+    _musicBox.playLongBeep();
     _getSound('Training done');
   }
 }

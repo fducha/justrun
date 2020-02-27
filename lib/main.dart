@@ -54,7 +54,7 @@ class JustRunApp extends StatelessWidget {
             onIdle: () => EmptyScaffold(child: Text('nothing\'s happening')),
             onWaiting: () => EmptyScaffold(child: CircularProgressIndicator()),
             onError: (error) => EmptyScaffold(child: Text('${error.toString()}')),
-            onData: (_) => TrainingPage(),
+            onData: (_) => TrainingPage(parentContext: context),
           ),
         ),
       ),

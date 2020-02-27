@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+import 'package:justrun/features/justrun/domain/entities/exercise.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../../../../core/utils/music_box.dart';
@@ -7,20 +9,24 @@ import '../../domain/pure_models/process_state.dart';
 import '../../domain/pure_models/training_model.dart';
 
 class TrainingModelTrigger {
+  final BuildContext context;
   final ReactiveModel<TrainingModel> _rxModel;
   Ticker _ticker;
   int _doneTasksTime = 0;
   static const int _countDownTime = 5;
 
-  final _musicBox = MusicBox();
+  final MusicBox _musicBox;
 
-  TrainingModelTrigger() : _rxModel = Injector.getAsReactive<TrainingModel>() {
+  TrainingModelTrigger({
+    @required this.context,
+  })  : _rxModel = Injector.getAsReactive<TrainingModel>(),
+        _musicBox = MusicBox(context: context) {
     _ticker = Ticker(
       duration: _rxModel.state.trainingTime + _countDownTime,
       onTick: (int tick) {
         print(tick);
         if (tick <= _countDownTime) {
-          _onTrainingStarted(tick);
+          _onTrainingStarted(tick, currentTask);
         } else {
           int taskTime =
               currentTask.duration - (tick - _doneTasksTime - _countDownTime);
@@ -36,7 +42,7 @@ class TrainingModelTrigger {
             rxModel.setState((s) => s.nextTask());
 
             if (rxModel.state.training.tasks.isNotEmpty)
-              _onTaskStarted();
+              _onTaskStarted(currentTask.exercise);
             else {
               _onTrainingEnded();
               _ticker.stop();
@@ -102,10 +108,11 @@ class TrainingModelTrigger {
     print('Sounded ... $text');
   }
 
-  Future _onTrainingStarted(int tick) async {
+  Future _onTrainingStarted(int tick, Task task) async {
     switch (tick) {
       case 1:
-        _getSound('Ready');
+        // _getSound('Ready');
+        _musicBox.playGetReady();
         break;
       case 2:
         _getSound('3');
@@ -120,7 +127,7 @@ class TrainingModelTrigger {
         _musicBox.playShortBeep();
         break;
       case 5:
-        _onTaskStarted();
+        _onTaskStarted(task.exercise);
         break;
     }
   }
@@ -149,9 +156,12 @@ class TrainingModelTrigger {
     }
   }
 
-  void _onTaskStarted() {
+  void _onTaskStarted(Exercise exercise) async {
     _musicBox.playLongBeep();
     _getSound('Task started');
+    await Future.delayed(Duration(milliseconds: 900));
+    // if (exercise is Runn)
+    _musicBox.playStartRunning();
   }
 
   void _onTrainingEnded() {

@@ -32,6 +32,10 @@ flutter:
   assets:
     - assets/audio/long_beep.mp3
     - assets/audio/short_beep.mp3
+    - assets/audio/start_running_en.mp3
+    - assets/audio/start_running_ru.mp3
+    - assets/audio/get_ready_en.mp3
+    - assets/audio/get_ready_ru.mp3
 
   # To add assets to your application, add an assets section, like this:
   # assets:

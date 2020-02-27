@@ -10,14 +10,22 @@ import '../../domain/pure_models/training_model.dart';
 import '../triggers/training_model_trigger.dart';
 
 class TrainingPage extends StatefulWidget {
-  TrainingPage({Key key}) : super(key: key);
+  final BuildContext parentContext;
+
+  TrainingPage({
+    Key key,
+    @required this.parentContext,
+  }) : super(key: key);
 
   @override
-  _TrainingPageState createState() => _TrainingPageState();
+  _TrainingPageState createState() => _TrainingPageState(parentContext);
 }
 
 class _TrainingPageState extends State<TrainingPage> {
-  final TrainingModelTrigger _trigger = TrainingModelTrigger();
+  final TrainingModelTrigger _trigger;
+
+  _TrainingPageState(BuildContext parentContext)
+      : _trigger = TrainingModelTrigger(context: parentContext);
 
   @override
   Widget build(BuildContext context) {
